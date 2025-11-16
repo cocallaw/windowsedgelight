@@ -170,14 +170,6 @@ Requires:
 
 ## Version History
 
-### v2.0 - Temperature Control and Presets
-- **Temperature Adjustment**: Control light color from warm (2700K) to cool (6500K)
-- **Interactive Slider**: Real-time temperature adjustment with visual feedback
-- **Preset System**: Save and recall three custom combinations of temperature and brightness
-- **Persistent Settings**: All preferences automatically saved and restored
-- **Enhanced UI**: Redesigned control panel with temperature slider and preset buttons
-- **Improved Tray Menu**: Added temperature and preset quick-access options
-
 ### v0.6 - Automatic Update System
 - Integrated Updatum for automatic updates from GitHub Releases
 - Beautiful update dialog with release notes
