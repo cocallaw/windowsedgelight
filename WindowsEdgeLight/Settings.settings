@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="WindowsEdgeLight.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="LightTemperature" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">6500</Value>
+    </Setting>
+    <Setting Name="LightBrightness" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="Preset1Temperature" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">6500</Value>
+    </Setting>
+    <Setting Name="Preset1Brightness" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="Preset2Temperature" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">4500</Value>
+    </Setting>
+    <Setting Name="Preset2Brightness" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0.7</Value>
+    </Setting>
+    <Setting Name="Preset3Temperature" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">2700</Value>
+    </Setting>
+    <Setting Name="Preset3Brightness" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0.5</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

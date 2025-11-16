@@ -3,8 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Controls"
-    Width="230"
-    Height="48"
+    Width="420"
+    Height="150"
     AllowsTransparency="True"
     Background="Transparent"
     ResizeMode="NoResize"
@@ -29,57 +29,131 @@
             </Style>
         </Border.Style>
 
-        <StackPanel Orientation="Horizontal">
-            <Button
-                Width="40"
-                Height="40"
-                Margin="4,4,0,4"
-                AutomationProperties.Name="Decrease brightness"
-                Click="BrightnessDown_Click"
-                Content="&#xE708;"
-                FontFamily="Segoe MDL2 Assets"
-                ToolTip="Decrease brightness (Ctrl+Shift+Down)" />
+        <StackPanel Margin="8">
+            <!-- Main Controls Row -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <Button
+                    Width="40"
+                    Height="40"
+                    Margin="4,4,0,4"
+                    AutomationProperties.Name="Decrease brightness"
+                    Click="BrightnessDown_Click"
+                    Content="&#xE708;"
+                    FontFamily="Segoe MDL2 Assets"
+                    ToolTip="Decrease brightness (Ctrl+Shift+Down)" />
 
-            <Button
-                Width="40"
-                Height="40"
-                Margin="4,4,0,4"
-                AutomationProperties.Name="Increase brightness"
-                Click="BrightnessUp_Click"
-                Content="&#xE706;"
-                FontFamily="Segoe MDL2 Assets"
-                ToolTip="Increase brightness (Ctrl+Shift+Up)" />
+                <Button
+                    Width="40"
+                    Height="40"
+                    Margin="4,4,0,4"
+                    AutomationProperties.Name="Increase brightness"
+                    Click="BrightnessUp_Click"
+                    Content="&#xE706;"
+                    FontFamily="Segoe MDL2 Assets"
+                    ToolTip="Increase brightness (Ctrl+Shift+Up)" />
 
-            <Button
-                Width="40"
-                Height="40"
-                Margin="4,4,0,4"
-                AutomationProperties.Name="Toggle light"
-                Click="Toggle_Click"
-                Content="&#xEA80;"
-                FontFamily="Segoe MDL2 Assets"
-                ToolTip="Toggle light (Ctrl+Shift+L)" />
+                <Button
+                    Width="40"
+                    Height="40"
+                    Margin="4,4,0,4"
+                    AutomationProperties.Name="Toggle light"
+                    Click="Toggle_Click"
+                    Content="&#xEA80;"
+                    FontFamily="Segoe MDL2 Assets"
+                    ToolTip="Toggle light (Ctrl+Shift+L)" />
 
-            <Button
-                x:Name="SwitchMonitorButton"
-                Width="40"
-                Height="40"
-                Margin="4,4,0,4"
-                AutomationProperties.Name="Switch monitor"
-                Click="SwitchMonitor_Click"
-                Content="&#xE7F4;"
-                FontFamily="Segoe MDL2 Assets"
-                ToolTip="Switch monitor" />
+                <Button
+                    x:Name="SwitchMonitorButton"
+                    Width="40"
+                    Height="40"
+                    Margin="4,4,0,4"
+                    AutomationProperties.Name="Switch monitor"
+                    Click="SwitchMonitor_Click"
+                    Content="&#xE7F4;"
+                    FontFamily="Segoe MDL2 Assets"
+                    ToolTip="Switch monitor" />
 
-            <Button
-                Width="40"
-                Height="40"
-                Margin="4,4,4,4"
-                AutomationProperties.Name="Exit"
-                Click="Close_Click"
-                Content="&#xE711;"
-                FontFamily="Segoe MDL2 Assets"
-                ToolTip="Exit" />
+                <Button
+                    Width="40"
+                    Height="40"
+                    Margin="4,4,4,4"
+                    AutomationProperties.Name="Exit"
+                    Click="Close_Click"
+                    Content="&#xE711;"
+                    FontFamily="Segoe MDL2 Assets"
+                    ToolTip="Exit" />
+            </StackPanel>
+
+            <!-- Temperature Slider -->
+            <StackPanel Orientation="Horizontal" Margin="4,0,4,8">
+                <TextBlock 
+                    Text="Temperature:" 
+                    VerticalAlignment="Center"
+                    Margin="0,0,8,0"
+                    FontSize="11" />
+                <TextBlock 
+                    Text="🔥" 
+                    VerticalAlignment="Center"
+                    Margin="0,0,4,0"
+                    ToolTip="Warm (2700K)" />
+                <Slider
+                    x:Name="TemperatureSlider"
+                    Width="220"
+                    Minimum="2700"
+                    Maximum="6500"
+                    TickFrequency="100"
+                    IsSnapToTickEnabled="True"
+                    ValueChanged="TemperatureSlider_ValueChanged"
+                    VerticalAlignment="Center"
+                    ToolTip="Adjust light temperature (warm to cool)" />
+                <TextBlock 
+                    Text="❄️" 
+                    VerticalAlignment="Center"
+                    Margin="4,0,8,0"
+                    ToolTip="Cool (6500K)" />
+                <TextBlock 
+                    x:Name="TemperatureValueText"
+                    Text="6500K" 
+                    VerticalAlignment="Center"
+                    FontSize="11"
+                    Width="45" />
+            </StackPanel>
+
+            <!-- Presets Row -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock 
+                    Text="Presets:" 
+                    VerticalAlignment="Center"
+                    Margin="0,0,8,0"
+                    FontSize="11" />
+                <Button
+                    x:Name="Preset1Button"
+                    Width="60"
+                    Height="30"
+                    Margin="4,0,4,0"
+                    Click="Preset1_Click"
+                    Content="1"
+                    FontWeight="Bold"
+                    ToolTip="Load Preset 1 (Click) / Save (Ctrl+Click)" />
+                <Button
+                    x:Name="Preset2Button"
+                    Width="60"
+                    Height="30"
+                    Margin="4,0,4,0"
+                    Click="Preset2_Click"
+                    Content="2"
+                    FontWeight="Bold"
+                    ToolTip="Load Preset 2 (Click) / Save (Ctrl+Click)" />
+                <Button
+                    x:Name="Preset3Button"
+                    Width="60"
+                    Height="30"
+                    Margin="4,0,4,0"
+                    Click="Preset3_Click"
+                    Content="3"
+                    FontWeight="Bold"
+                    ToolTip="Load Preset 3 (Click) / Save (Ctrl+Click)" />
+            </StackPanel>
         </StackPanel>
     </Border>
 </Window>

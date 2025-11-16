@@ -5,6 +5,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Forms;
 using System.IO;
+using WindowsEdgeLight.Properties;
 
 namespace WindowsEdgeLight;
 
@@ -12,9 +13,13 @@ public partial class MainWindow : Window
 {
     private bool isLightOn = true;
     private double currentOpacity = 1.0;  // Full brightness by default
+    private int currentTemperature = 6500; // Default cool white (6500K)
     private const double OpacityStep = 0.15;
     private const double MinOpacity = 0.2;
     private const double MaxOpacity = 1.0;
+    private const int MinTemperature = 2700; // Warm white
+    private const int MaxTemperature = 6500; // Cool white
+    private const int TemperatureStep = 100;
     
     private NotifyIcon? notifyIcon;
     private ControlWindow? controlWindow;
@@ -86,6 +91,13 @@ public partial class MainWindow : Window
         contextMenu.Items.Add("🔆 Brightness Up (Ctrl+Shift+↑)", null, (s, e) => IncreaseBrightness());
         contextMenu.Items.Add("🔅 Brightness Down (Ctrl+Shift+↓)", null, (s, e) => DecreaseBrightness());
         contextMenu.Items.Add(new ToolStripSeparator());
+        contextMenu.Items.Add("🌡️ Temperature: Warmer", null, (s, e) => DecreaseTemperature());
+        contextMenu.Items.Add("🌡️ Temperature: Cooler", null, (s, e) => IncreaseTemperature());
+        contextMenu.Items.Add(new ToolStripSeparator());
+        contextMenu.Items.Add("📌 Load Preset 1", null, (s, e) => LoadPreset(1));
+        contextMenu.Items.Add("📌 Load Preset 2", null, (s, e) => LoadPreset(2));
+        contextMenu.Items.Add("📌 Load Preset 3", null, (s, e) => LoadPreset(3));
+        contextMenu.Items.Add(new ToolStripSeparator());
         contextMenu.Items.Add("✖ Exit", null, (s, e) => System.Windows.Application.Current.Shutdown());
         
         notifyIcon.ContextMenuStrip = contextMenu;
@@ -103,10 +115,20 @@ public partial class MainWindow : Window
 🔆 Brightness Up:  Ctrl + Shift + ↑
 🔅 Brightness Down:  Ctrl + Shift + ↓
 
+🌡️ Temperature Control:
+• Use the slider in the control panel
+• Or right-click tray icon for quick adjustments
+
+📌 Presets:
+• Click preset buttons (1, 2, 3) to load
+• Ctrl + Click to save current settings
+• Presets save both temperature and brightness
+
 💡 Features:
 • Click-through overlay - won't interfere with your work
 • Global hotkeys work from any application
 • Right-click taskbar icon for menu
+• Settings persist between sessions
 
 Created by Scott Hanselman
 Version {version}";
@@ -165,6 +187,9 @@ Version {version}";
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
+        // Load saved settings
+        LoadSettings();
+        
         SetupWindow();
         CreateFrameGeometry();
         CreateControlWindow();
@@ -185,6 +210,10 @@ Version {version}";
         // Listen for window size/location changes (docking/undocking)
         this.SizeChanged += Window_SizeChanged;
         this.LocationChanged += Window_LocationChanged;
+        
+        // Apply initial temperature and brightness
+        UpdateLightColor();
+        EdgeLightBorder.Opacity = currentOpacity;
     }
 
     private void CreateControlWindow()
@@ -250,6 +279,9 @@ Version {version}";
 
     protected override void OnClosed(EventArgs e)
     {
+        // Save settings before closing
+        SaveSettings();
+        
         var hwnd = new WindowInteropHelper(this).Handle;
         UnregisterHotKey(hwnd, HOTKEY_TOGGLE);
         UnregisterHotKey(hwnd, HOTKEY_BRIGHTNESS_UP);
@@ -300,12 +332,14 @@ Version {version}";
     {
         currentOpacity = Math.Min(MaxOpacity, currentOpacity + OpacityStep);
         EdgeLightBorder.Opacity = currentOpacity;
+        SaveSettings();
     }
 
     public void DecreaseBrightness()
     {
         currentOpacity = Math.Max(MinOpacity, currentOpacity - OpacityStep);
         EdgeLightBorder.Opacity = currentOpacity;
+        SaveSettings();
     }
 
     public void MoveToNextMonitor()
@@ -433,4 +467,192 @@ Version {version}";
 
     [DllImport("user32.dll")]
     private static extern int SetWindowLong(IntPtr hwnd, int index, int newStyle);
+
+    // Load settings from persistent storage
+    private void LoadSettings()
+    {
+        currentTemperature = Settings.Default.LightTemperature;
+        currentOpacity = Settings.Default.LightBrightness;
+        
+        // Ensure values are in valid range
+        currentTemperature = Math.Clamp(currentTemperature, MinTemperature, MaxTemperature);
+        currentOpacity = Math.Clamp(currentOpacity, MinOpacity, MaxOpacity);
+    }
+
+    // Save settings to persistent storage
+    private void SaveSettings()
+    {
+        Settings.Default.LightTemperature = currentTemperature;
+        Settings.Default.LightBrightness = currentOpacity;
+        Settings.Default.Save();
+    }
+
+    // Convert temperature (Kelvin) to RGB color
+    private Color TemperatureToColor(int temperature)
+    {
+        // Clamp temperature to valid range
+        double temp = Math.Clamp(temperature, MinTemperature, MaxTemperature) / 100.0;
+        
+        double red, green, blue;
+
+        // Calculate red
+        if (temp <= 66)
+        {
+            red = 255;
+        }
+        else
+        {
+            red = temp - 60;
+            red = 329.698727446 * Math.Pow(red, -0.1332047592);
+            red = Math.Clamp(red, 0, 255);
+        }
+
+        // Calculate green
+        if (temp <= 66)
+        {
+            green = temp;
+            green = 99.4708025861 * Math.Log(green) - 161.1195681661;
+            green = Math.Clamp(green, 0, 255);
+        }
+        else
+        {
+            green = temp - 60;
+            green = 288.1221695283 * Math.Pow(green, -0.0755148492);
+            green = Math.Clamp(green, 0, 255);
+        }
+
+        // Calculate blue
+        if (temp >= 66)
+        {
+            blue = 255;
+        }
+        else if (temp <= 19)
+        {
+            blue = 0;
+        }
+        else
+        {
+            blue = temp - 10;
+            blue = 138.5177312231 * Math.Log(blue) - 305.0447927307;
+            blue = Math.Clamp(blue, 0, 255);
+        }
+
+        return Color.FromRgb((byte)red, (byte)green, (byte)blue);
+    }
+
+    // Update the light gradient based on current temperature
+    private void UpdateLightColor()
+    {
+        Color baseColor = TemperatureToColor(currentTemperature);
+        
+        // Create gradient with slight variations for visual interest
+        var gradient = new LinearGradientBrush();
+        gradient.StartPoint = new Point(0, 0);
+        gradient.EndPoint = new Point(1, 1);
+        
+        // Create variations by adjusting brightness
+        Color lighterColor = Color.FromRgb(
+            (byte)Math.Min(255, baseColor.R + 15),
+            (byte)Math.Min(255, baseColor.G + 15),
+            (byte)Math.Min(255, baseColor.B + 15)
+        );
+        Color darkerColor = Color.FromRgb(
+            (byte)Math.Max(0, baseColor.R - 15),
+            (byte)Math.Max(0, baseColor.G - 15),
+            (byte)Math.Max(0, baseColor.B - 15)
+        );
+        
+        gradient.GradientStops.Add(new GradientStop(baseColor, 0.0));
+        gradient.GradientStops.Add(new GradientStop(darkerColor, 0.3));
+        gradient.GradientStops.Add(new GradientStop(baseColor, 0.5));
+        gradient.GradientStops.Add(new GradientStop(lighterColor, 0.7));
+        gradient.GradientStops.Add(new GradientStop(baseColor, 1.0));
+        
+        EdgeLightBorder.Fill = gradient;
+    }
+
+    // Public methods for temperature control
+    public void IncreaseTemperature()
+    {
+        currentTemperature = Math.Min(MaxTemperature, currentTemperature + TemperatureStep);
+        UpdateLightColor();
+        SaveSettings();
+    }
+
+    public void DecreaseTemperature()
+    {
+        currentTemperature = Math.Max(MinTemperature, currentTemperature - TemperatureStep);
+        UpdateLightColor();
+        SaveSettings();
+    }
+
+    public void SetTemperature(int temperature)
+    {
+        currentTemperature = Math.Clamp(temperature, MinTemperature, MaxTemperature);
+        UpdateLightColor();
+        SaveSettings();
+    }
+
+    public int GetTemperature()
+    {
+        return currentTemperature;
+    }
+
+    public int GetMinTemperature()
+    {
+        return MinTemperature;
+    }
+
+    public int GetMaxTemperature()
+    {
+        return MaxTemperature;
+    }
+
+    // Preset management methods
+    public void SavePreset(int presetNumber)
+    {
+        switch (presetNumber)
+        {
+            case 1:
+                Settings.Default.Preset1Temperature = currentTemperature;
+                Settings.Default.Preset1Brightness = currentOpacity;
+                break;
+            case 2:
+                Settings.Default.Preset2Temperature = currentTemperature;
+                Settings.Default.Preset2Brightness = currentOpacity;
+                break;
+            case 3:
+                Settings.Default.Preset3Temperature = currentTemperature;
+                Settings.Default.Preset3Brightness = currentOpacity;
+                break;
+        }
+        Settings.Default.Save();
+    }
+
+    public void LoadPreset(int presetNumber)
+    {
+        switch (presetNumber)
+        {
+            case 1:
+                currentTemperature = Settings.Default.Preset1Temperature;
+                currentOpacity = Settings.Default.Preset1Brightness;
+                break;
+            case 2:
+                currentTemperature = Settings.Default.Preset2Temperature;
+                currentOpacity = Settings.Default.Preset2Brightness;
+                break;
+            case 3:
+                currentTemperature = Settings.Default.Preset3Temperature;
+                currentOpacity = Settings.Default.Preset3Brightness;
+                break;
+        }
+        
+        // Ensure values are in valid range
+        currentTemperature = Math.Clamp(currentTemperature, MinTemperature, MaxTemperature);
+        currentOpacity = Math.Clamp(currentOpacity, MinOpacity, MaxOpacity);
+        
+        UpdateLightColor();
+        EdgeLightBorder.Opacity = currentOpacity;
+        SaveSettings();
+    }
 }
