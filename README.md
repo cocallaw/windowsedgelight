@@ -10,20 +10,26 @@ A lightweight WPF application that adds a customizable glowing edge light effect
 - **Fluent Design**: Modern UX that fits in with the Windows look and feel
 - **Click-Through Transparency**: Overlay doesn't interfere with your work - all clicks pass through to applications beneath
 - **Customizable Brightness**: Adjust opacity with easy-to-use controls
+- **Adjustable Temperature**: Control light temperature from warm (2700K) to cool (6500K) with a convenient slider
+- **Preset System**: Save and recall up to three presets combining temperature and brightness settings
 - **Toggle On/Off**: Quickly enable or disable the edge light effect
 - **Always On Top**: Stays visible above all other windows
+- **Persistent Settings**: All settings (brightness, temperature, presets) are saved and restored on restart
 - **Keyboard Shortcuts**: 
   - `Ctrl+Shift+L` - Toggle light on/off
   - `Ctrl+Shift+Up` - Increase brightness
   - `Ctrl+Shift+Down` - Decrease brightness
-- **Gradient Effect**: Beautiful white gradient with subtle blur for a professional look
+- **Gradient Effect**: Beautiful color gradient with subtle blur for a professional look
 
 ## Screenshots
 
 The application creates a smooth, glowing border around the edges of your primary monitor:
 
 - Adjustable brightness levels (20% to 100% opacity)
+- Adjustable temperature (2700K warm to 6500K cool)
+- Three customizable presets for quick switching
 - Soft blur effect for a natural glow
+- Settings persist between sessions
 - Minimal UI controls that fade in on hover
 
 ![Windows Edge Light](HeroImage.png)
@@ -76,18 +82,39 @@ The executable will be in `bin\Release\net10.0-windows\win-x64\publish\WindowsEd
 
 1. Launch `WindowsEdgeLight.exe`
 2. The edge light will appear around your primary monitor
-3. Hover over the top-right corner to reveal controls:
+3. Hover over the control panel at the bottom center to access:
    - 🔅 **Decrease Brightness** - Reduces opacity
    - 🔆 **Increase Brightness** - Increases opacity
    - 💡 **Toggle Light** - Turn the effect on/off
+   - 🖥️ **Switch Monitor** - Move to next monitor (multi-monitor setups)
    - ✖ **Exit** - Close the application
+   - 🌡️ **Temperature Slider** - Adjust from warm (🔥 2700K) to cool (❄️ 6500K)
+   - **Presets 1, 2, 3** - Click to load, Ctrl+Click to save current settings
 
 ### Keyboard Shortcuts
 
 - **Ctrl+Shift+L**: Toggle the edge light on/off
 - **Ctrl+Shift+Up**: Increase brightness
 - **Ctrl+Shift+Down**: Decrease brightness
-- **Taskbar**: Right-click the taskbar icon to close the application
+- **Taskbar**: Right-click the taskbar icon for full menu options
+
+### Working with Presets
+
+Presets allow you to save and quickly recall your favorite combinations of temperature and brightness:
+
+1. **To Save a Preset**: 
+   - Adjust brightness and temperature to your desired settings
+   - Hold `Ctrl` and click one of the preset buttons (1, 2, 3)
+   - A confirmation message will appear
+
+2. **To Load a Preset**: 
+   - Simply click one of the preset buttons (1, 2, 3)
+   - Both temperature and brightness will be applied instantly
+
+3. **Default Presets**:
+   - Preset 1: Cool white (6500K) at full brightness
+   - Preset 2: Neutral (4500K) at 70% brightness
+   - Preset 3: Warm white (2700K) at 50% brightness
 
 ## Technical Details
 
@@ -103,7 +130,10 @@ The executable will be in `bin\Release\net10.0-windows\win-x64\publish\WindowsEd
 - **Click-Through**: Uses Win32 `WS_EX_TRANSPARENT` and `WS_EX_LAYERED` window styles
 - **DPI Scaling**: Converts physical pixels to WPF Device Independent Pixels for proper sizing
 - **Primary Monitor**: Uses `Screen.PrimaryScreen.Bounds` with DPI correction
-- **Gradient Border**: Custom Rectangle with LinearGradientBrush and BlurEffect
+- **Gradient Border**: Custom Path with LinearGradientBrush and DropShadowEffect
+- **Temperature Control**: Scientific color temperature to RGB conversion (2700K-6500K)
+- **Settings Persistence**: Uses `Properties.Settings` for saving user preferences
+- **Preset System**: Stores three combinations of temperature and brightness
 
 ## Multi-Monitor Support
 
@@ -124,6 +154,9 @@ WindowsEdgeLight/
 │   ├── App.xaml.cs
 │   ├── MainWindow.xaml       # Main UI layout
 │   ├── MainWindow.xaml.cs    # Application logic
+│   ├── ControlWindow.xaml    # Control panel UI
+│   ├── ControlWindow.xaml.cs # Control panel logic
+│   ├── Settings.settings     # User settings configuration
 │   ├── WindowsEdgeLight.csproj
 │   └── AssemblyInfo.cs
 └── README.md
@@ -136,6 +169,14 @@ Requires:
 - Or .NET 10.0 SDK for command-line builds
 
 ## Version History
+
+### v2.0 - Temperature Control and Presets
+- **Temperature Adjustment**: Control light color from warm (2700K) to cool (6500K)
+- **Interactive Slider**: Real-time temperature adjustment with visual feedback
+- **Preset System**: Save and recall three custom combinations of temperature and brightness
+- **Persistent Settings**: All preferences automatically saved and restored
+- **Enhanced UI**: Redesigned control panel with temperature slider and preset buttons
+- **Improved Tray Menu**: Added temperature and preset quick-access options
 
 ### v0.6 - Automatic Update System
 - Integrated Updatum for automatic updates from GitHub Releases

@@ -10,13 +10,13 @@
     <ApplicationIcon>ringlight_cropped.ico</ApplicationIcon>
     
     <!-- Assembly Information -->
-    <AssemblyVersion>1.9.0.0</AssemblyVersion>
-    <FileVersion>1.9.0.0</FileVersion>
-    <Version>1.9</Version>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
+    <Version>2.0</Version>
     <Authors>Scott Hanselman</Authors>
     <Company>Scott Hanselman</Company>
     <Product>Windows Edge Light</Product>
-    <Description>A lightweight WPF application that adds a customizable glowing edge light effect around your primary monitor</Description>
+    <Description>A lightweight WPF application that adds a customizable glowing edge light effect with adjustable temperature and presets around your primary monitor</Description>
     <Copyright>Copyright © 2025 Scott Hanselman</Copyright>
     
     <!-- Publishing Options - Single-file self-contained (no trimming for WPF/WinForms compatibility) -->

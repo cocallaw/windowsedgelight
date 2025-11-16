@@ -121,8 +121,18 @@ The script will:
 - Uses Win32 `WS_EX_TRANSPARENT` flag for click-through
 - Positioned and sized using `Screen.PrimaryScreen` API
 - DPI-aware scaling using `PresentationSource`
+- Temperature-to-RGB color conversion using scientific formulas
+- Settings persistence via `Properties.Settings`
 
-#### 2. Global Hotkeys
+#### 2. Control Window (`ControlWindow.xaml/.cs`)
+- Separate clickable window for user controls
+- Temperature slider (2700K - 6500K range)
+- Three preset buttons with save/load functionality
+- Brightness controls
+- Toggle and exit buttons
+- Positioned at bottom center of main window
+
+#### 3. Global Hotkeys
 - Registered using Win32 `RegisterHotKey` API
 - Hooks into Windows message pump via `HwndSource`
 - Supported hotkeys:
@@ -130,23 +140,32 @@ The script will:
   - `Ctrl+Shift+Up` - Increase brightness
   - `Ctrl+Shift+Down` - Decrease brightness
 
-#### 3. System Tray Icon
+#### 4. System Tray Icon
 - Uses Windows Forms `NotifyIcon`
-- Right-click context menu for all operations
+- Right-click context menu for all operations including presets
 - Double-click shows help dialog
 - Icon loaded from file or falls back to system icon
 
-#### 4. Edge Light Effect
-- XAML Rectangle with LinearGradientBrush
-- BlurEffect for glow appearance
+#### 5. Edge Light Effect
+- XAML Path with LinearGradientBrush
+- DropShadowEffect for glow appearance
 - Adjustable opacity (20% - 100%)
-- 20px margin from screen edges
+- Adjustable color temperature (2700K - 6500K)
+- Dynamic gradient based on temperature setting
+
+#### 6. Settings Management
+- Uses `Properties.Settings` for persistence
+- Stores temperature, brightness, and three presets
+- Automatically saves on change
+- Automatically loads on startup
+- XML-based configuration in user's AppData folder
 
 ### Design Patterns
 
 - **Event-driven architecture**: Responds to hotkeys and user interactions
 - **Separation of concerns**: XAML for UI, C# for logic
 - **Defensive programming**: Try-catch blocks, null checks, fallbacks
+- **Settings pattern**: Centralized configuration management
 
 ---
 
@@ -302,14 +321,23 @@ However, WPF was chosen for:
 
 #### Adding Features
 - **MainWindow.xaml.cs** - Add logic and event handlers
-- **MainWindow.xaml** - Modify UI layout
+- **MainWindow.xaml** - Modify UI layout (rarely needed with separate control window)
+- **ControlWindow.xaml** - Modify control panel layout
+- **ControlWindow.xaml.cs** - Add control panel event handlers
+- **Settings.settings** - Add new configuration properties
 
 #### Changing Appearance
 - **MainWindow.xaml** - Modify gradient, colors, blur
-- Look for `EdgeLightBorder` Rectangle element
+- Look for `EdgeLightBorder` Path element
+- Temperature-to-color conversion in `MainWindow.xaml.cs`
 
 #### Updating Hotkeys
 - **MainWindow.xaml.cs** - Modify `RegisterHotKey` calls and `HwndHook` switch statement
+
+#### Settings Management
+- **Settings.settings** - Add new settings (auto-generates Settings.settings.cs)
+- Use `Settings.Default.PropertyName` to access/modify
+- Call `Settings.Default.Save()` to persist changes
 
 #### Icon Changes
 - Replace `ringlight_cropped.ico`
@@ -333,6 +361,11 @@ Currently no automated tests. Manual testing checklist:
 - [ ] All hotkeys work
 - [ ] System tray menu works
 - [ ] Brightness controls function
+- [ ] Temperature slider adjusts color correctly
+- [ ] Temperature range (2700K - 6500K) works
+- [ ] Preset save functionality (Ctrl+Click)
+- [ ] Preset load functionality (Click)
+- [ ] Settings persist after restart
 - [ ] Toggle on/off works
 - [ ] Can close from tray/taskbar
 - [ ] Works on different DPI settings
